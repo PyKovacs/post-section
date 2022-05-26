@@ -3,8 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# personal folder with resources
+# project specific
 notes/
+.venv/
+data/
 
 # Build results
 [Dd]ebug/
