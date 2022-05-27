@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import requests
 
@@ -8,7 +8,9 @@ db = SQLAlchemy(app)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=True, nullable=False)
+    userId = db.Column(db.Integer)
+    title = db.Column(db.String(80), nullable=False)
+    body = db.Column(db.String(300))
 
     def __repr__(self):
         return '{} : {}'.format(self.id, self.title)
@@ -21,6 +23,8 @@ def index():
 def get_post(post_id):
     try:
         post = Post.query.get(post_id)
-        return {"title" : post.title}
+        return jsonify([{'userId' : post.userId}, 
+                        {'title' : post.title},
+                        {'body' : post.body}])
     except AttributeError as exc:
         return{'msg': 'Post ID {} not found.'.format(post_id)}, 404
