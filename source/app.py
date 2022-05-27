@@ -23,10 +23,10 @@ def index():
 def get_post(post_id):
     try:
         post = Post.query.get(post_id)
-        return jsonify([{'id' : post.id},
-                        {'userId' : post.userId}, 
-                        {'title' : post.title},
-                        {'body' : post.body}])
+        return {'id' : post.id,
+                'userId' : post.userId, 
+                'title' : post.title,
+                'body' : post.body}
     except AttributeError:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
@@ -37,7 +37,7 @@ def add_post():
                 body=request.json['body'])
     db.session.add(post)
     db.session.commit()
-    return jsonify([{'id' : post.id},
-                    {'userId' : post.userId}, 
-                    {'title' : post.title},
-                    {'body' : post.body}]), 201
+    return {'id' : post.id,
+            'userId' : post.userId, 
+            'title' : post.title,
+            'body' : post.body}, 201
