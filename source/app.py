@@ -17,7 +17,10 @@ class Post(db.Model):
 def index():
     return 'Hey!'
 
-@app.get('/posts/<id>')
-def get_post(id):
-    post = Post.query.get(id)
-    return {"title" : post.title}
+@app.get('/posts/<post_id>')
+def get_post(post_id):
+    try:
+        post = Post.query.get(post_id)
+        return {"title" : post.title}
+    except AttributeError as exc:
+        return{'msg': 'Post ID {} not found.'.format(post_id)}, 404
