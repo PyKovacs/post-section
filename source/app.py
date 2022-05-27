@@ -26,5 +26,5 @@ def get_post(post_id):
         return jsonify([{'userId' : post.userId}, 
                         {'title' : post.title},
                         {'body' : post.body}])
-    except AttributeError as exc:
-        return{'msg': 'Post ID {} not found.'.format(post_id)}, 404
+    except AttributeError:
+        return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
