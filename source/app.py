@@ -1,6 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-import requests
+#import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.db'
@@ -23,8 +23,21 @@ def index():
 def get_post(post_id):
     try:
         post = Post.query.get(post_id)
-        return jsonify([{'userId' : post.userId}, 
+        return jsonify([{'id' : post.id},
+                        {'userId' : post.userId}, 
                         {'title' : post.title},
                         {'body' : post.body}])
     except AttributeError:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
+
+@app.post('/posts')
+def add_post():
+    post = Post(userId=request.json['userId'],
+                title=request.json['title'],
+                body=request.json['body'])
+    db.session.add(post)
+    db.session.commit()
+    return jsonify([{'id' : post.id},
+                    {'userId' : post.userId}, 
+                    {'title' : post.title},
+                    {'body' : post.body}]), 201
