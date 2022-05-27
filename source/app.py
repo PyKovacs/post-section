@@ -1,3 +1,4 @@
+from ast import stmt
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 #import requests
@@ -30,6 +31,14 @@ def get_post(post_id):
     except AttributeError:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
+@app.get('/posts/from_user=<user_id>')
+def get_user_posts(user_id):
+    result = Post.query.filter(Post.userId == user_id)
+    #result.all()    returns alll represenataions of Posts related
+    for i in result:
+        return {"id" : i}        # only getting 1 result
+
+
 @app.post('/posts')
 def add_post():
     post = Post(userId=request.json['userId'],
@@ -41,3 +50,13 @@ def add_post():
             'userId' : post.userId, 
             'title' : post.title,
             'body' : post.body}, 201
+
+@app.delete('/posts/<post_id>')
+def delete_post(post_id):
+        post = Post.query.get(post_id)
+        if post == None:
+            return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
+        db.session.delete(post)
+        db.session.commit()
+        return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
+        
