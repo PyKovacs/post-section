@@ -14,7 +14,7 @@ class Post(db.Model):
     body = db.Column(db.String(300))
 
     def __repr__(self):
-        return '{} : {}'.format(self.id, self.title)
+        return str(self.id)
 
 @app.route('/')
 def index():
@@ -53,10 +53,10 @@ def add_post():
 
 @app.delete('/posts/<post_id>')
 def delete_post(post_id):
-        post = Post.query.get(post_id)
-        if post == None:
-            return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
-        db.session.delete(post)
-        db.session.commit()
-        return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
+    post = Post.query.get(post_id)
+    if post == None:
+        return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
+    db.session.delete(post)
+    db.session.commit()
+    return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
         
