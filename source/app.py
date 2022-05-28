@@ -16,10 +16,6 @@ class Post(db.Model):
     def __repr__(self):
         return str(self.id)
 
-@app.route('/')
-def index():
-    return 'Hey!'
-
 @app.get('/posts/<post_id>')
 def get_post(post_id):
     try:
@@ -46,6 +42,20 @@ def get_user_posts(user_id):
 
 @app.post('/posts')
 def add_post():
+    ### input validation
+    try:
+        # userid
+        if not request.json['userId'] or not str(request.json['userId']).isdecimal():
+            return {'msg': 'User ID is in wrong format or missing.'}, 400
+        # title
+        if not request.json['title'] or len(str(request.json['title'])) > 80:
+            return {'msg': 'Title is missing or too long (max 80 chars).'}, 400
+        # body
+        if not request.json['body'] or len(str(request.json['body'])) > 300:
+            return {'msg': 'Body is missing or too long (max 300 chars).'}, 400
+    except (ValueError, AttributeError, TypeError):
+        return {'msg': 'Wrong format of the request.'}, 400
+    
     post = Post(userId=request.json['userId'],
                 title=request.json['title'],
                 body=request.json['body'])
