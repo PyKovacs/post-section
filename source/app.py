@@ -34,10 +34,15 @@ def get_post(post_id):
 @app.get('/posts/from_user=<user_id>')
 def get_user_posts(user_id):
     result = Post.query.filter(Post.userId == user_id)
-    #result.all()    returns alll represenataions of Posts related
-    for i in result:
-        return {"id" : i}        # only getting 1 result
-
+    post_ids = result.all()
+    posts = []
+    for post_id in post_ids:
+        post = Post.query.get(str(post_id))
+        posts.append({'id' : post.id,
+                      'userId' : post.userId, 
+                      'title' : post.title,
+                      'body' : post.body})
+    return jsonify(posts)
 
 @app.post('/posts')
 def add_post():
