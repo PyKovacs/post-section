@@ -1,7 +1,7 @@
+import requests
+
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-
-#import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.db'
@@ -18,7 +18,7 @@ class Post(db.Model):
 
     def show(self):
         return {'id' : self.id,
-                'userid' : self.userId, 
+                'userId' : self.userId, 
                 'title' : self.title,
                 'body' : self.body}
 
@@ -33,9 +33,25 @@ class Post(db.Model):
         db.session.commit()  
         return 'Updated!'
 
+class ExAPI():
+
+    def __init__(self, endpoint) -> None:
+        self.endpoint = endpoint
+        self.baseurl = "https://jsonplaceholder.typicode.com/"
+    
+    def get_resource(self, id):
+        url = self.baseurl + self.endpoint + str(id)
+        try:
+            resource = requests.get(url, verify=False, headers={"Content-Type": "application/json"})
+            if resource:
+                return resource
+            return None
+        except requests.exceptions.RequestException:
+            return 1
+        
 def input_validation(request, action = "add_post"):
     try:
-        if request.content_length > 623:
+        if request.content_length > 700:
             return {'msg': 'Request too long.'}, 400
         # title
         p_title = request.json['title']
@@ -43,12 +59,12 @@ def input_validation(request, action = "add_post"):
             return {'msg': 'Title is missing or too long (max 80 chars).'}, 400
         # body
         p_body = request.json['body']
-        if not p_body or len(str(p_body)) > 300:
-            return {'msg': 'Body is missing or too long (max 300 chars).'}, 400
-        # userid
+        if not p_body or len(str(p_body)) > 500:
+            return {'msg': 'Body is missing or too long (max 500 chars).'}, 400
+        # userId
         if action == "add_post":
-            p_userid = request.json['userid']
-            if not p_userid or not str(p_userid).isdecimal():
+            p_userId = request.json['userId']
+            if not p_userId or not str(p_userId).isdecimal():
                 return {'msg': 'User ID is in wrong format or missing.'}, 400
     except (ValueError, AttributeError, TypeError):
         return {'msg': 'Wrong format of the request.'}, 400
@@ -60,7 +76,21 @@ def get_post(post_id):
         post = Post.query.get(post_id)
         return post.show()
     except AttributeError:
-        return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
+        posts_ext_api = ExAPI("posts/")
+        post_find = posts_ext_api.get_resource(post_id)
+        if post_find == 1:
+            return {'msg': 'Internal error.'}, 500
+        if post_find:
+            p = post_find.json()
+            post = Post(id=p['id'],
+                        userId=p['userId'],
+                        title=p['title'],
+                        body=p['body'])
+            db.session.add(post)
+            db.session.commit()
+            return post.show(), 200
+        
+        return {'msg': 'Post not found.'}, 404
 
 @app.get('/posts/from_user=<user_id>')
 def get_user_posts(user_id):
@@ -81,7 +111,14 @@ def add_post():
     if check:
         return check
 
-    post = Post(userId=request.json['userid'],
+    users_ext_api = ExAPI("users/")
+    user_check = users_ext_api.get_resource(request.json['userId'])
+    if not user_check:
+        return {'msg': 'User not found.'}, 404
+    if user_check == 1:
+        return {'msg': 'Internal error.'}, 500
+
+    post = Post(userId=request.json['userId'],
                 title=request.json['title'],
                 body=request.json['body'])
     db.session.add(post)
@@ -117,4 +154,3 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
-        
