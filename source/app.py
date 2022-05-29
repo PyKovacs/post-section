@@ -1,5 +1,3 @@
-import sys
-
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -20,26 +18,41 @@ class Post(db.Model):
 
     def show(self):
         return {'id' : self.id,
-                'userId' : self.userId, 
+                'userid' : self.userId, 
                 'title' : self.title,
                 'body' : self.body}
 
     def update(self, attr, value):
         if attr not in ["title", "body"]:
             return 'Wrong attribute. Only title and/or body can be modified. Dropped.'
-        if not value:
-            return 'Invalid value. Dropped.'
         if attr == "title":
-            if len(str(value)) > 80:
-                return 'Title too long (max 80 characters). Dropped.'
             self.title = value
         if attr == "body":
-            if len(str(value)) > 300:
-                return 'Body too long (max 300 characters). Dropped.'
             self.body = value
         db.session.add(self)
         db.session.commit()  
         return 'Updated!'
+
+def input_validation(request, action = "add_post"):
+    try:
+        if request.content_length > 623:
+            return {'msg': 'Request too long.'}, 400
+        # title
+        p_title = request.json['title']
+        if not p_title or len(str(p_title)) > 80:
+            return {'msg': 'Title is missing or too long (max 80 chars).'}, 400
+        # body
+        p_body = request.json['body']
+        if not p_body or len(str(p_body)) > 300:
+            return {'msg': 'Body is missing or too long (max 300 chars).'}, 400
+        # userid
+        if action == "add_post":
+            p_userid = request.json['userid']
+            if not p_userid or not str(p_userid).isdecimal():
+                return {'msg': 'User ID is in wrong format or missing.'}, 400
+    except (ValueError, AttributeError, TypeError):
+        return {'msg': 'Wrong format of the request.'}, 400
+    return None
 
 @app.get('/posts/<post_id>')
 def get_post(post_id):
@@ -63,28 +76,14 @@ def get_user_posts(user_id):
 
 @app.post('/posts')
 def add_post():
-    ### input validation
-    try:
-        if request.content_length > 623:
-            return {'msg': 'Request too long.'}, 400
-        # userid
-        p_userid = request.json['userId']
-        if not p_userid or not str(p_userid).isdecimal():
-            return {'msg': 'User ID is in wrong format or missing.'}, 400
-        # title
-        p_title = request.json['title']
-        if not p_title or len(str(p_title)) > 80:
-            return {'msg': 'Title is missing or too long (max 80 chars).'}, 400
-        # body
-        p_body = request.json['body']
-        if not p_body or len(str(p_body)) > 300:
-            return {'msg': 'Body is missing or too long (max 300 chars).'}, 400
-    except (ValueError, AttributeError, TypeError):
-        return {'msg': 'Wrong format of the request.'}, 400
     
-    post = Post(userId=p_userid,
-                title=p_title,
-                body=p_body)
+    check = input_validation(request)
+    if check:
+        return check
+
+    post = Post(userId=request.json['userid'],
+                title=request.json['title'],
+                body=request.json['body'])
     db.session.add(post)
     db.session.commit()
     return post.show(), 201
@@ -94,6 +93,10 @@ def update_post(post_id):
     post = Post.query.get(post_id)
     if post is None:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
+
+    check = input_validation(request)
+    if check:
+        return check
 
     result = {}
     code = 422
