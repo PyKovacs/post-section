@@ -1,5 +1,8 @@
+import sys
+
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+
 #import requests
 
 app = Flask(__name__)
@@ -10,7 +13,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer)
     title = db.Column(db.String(80), nullable=False)
-    body = db.Column(db.String(300))
+    body = db.Column(db.String(500))
 
     def __repr__(self):
         return str(self.id)
@@ -53,16 +56,17 @@ def get_user_posts(user_id):
     posts = []
     for post_id in post_ids:
         post = Post.query.get(str(post_id))
-        posts.append({'id' : post.id,
-                      'userId' : post.userId, 
-                      'title' : post.title,
-                      'body' : post.body})
+        posts.append(post.show())
+    if not posts:
+        return {'msg': 'No posts from user {}'.format(user_id)}, 404
     return jsonify(posts)
 
 @app.post('/posts')
 def add_post():
     ### input validation
     try:
+        if request.content_length > 623:
+            return {'msg': 'Request too long.'}, 400
         # userid
         p_userid = request.json['userId']
         if not p_userid or not str(p_userid).isdecimal():
