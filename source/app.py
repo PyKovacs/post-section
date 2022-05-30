@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.db'
 db = SQLAlchemy(app)
 
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer)
@@ -17,39 +18,44 @@ class Post(db.Model):
         return str(self.id)
 
     def show(self):
-        return {'id' : self.id,
-                'userId' : self.userId, 
-                'title' : self.title,
-                'body' : self.body}
+        return {'id': self.id,
+                'userId': self.userId,
+                'title': self.title,
+                'body': self.body}
 
     def update(self, attr, value):
         if attr not in ["title", "body"]:
-            return 'Wrong attribute. Only title and/or body can be modified. Dropped.'
+            return ('Wrong attribute.'
+                    'Only title and/or body can be modified. Dropped.')
         if attr == "title":
             self.title = value
         if attr == "body":
             self.body = value
         db.session.add(self)
-        db.session.commit()  
+        db.session.commit()
         return 'Updated!'
+
 
 class ExAPI():
 
     def __init__(self, endpoint) -> None:
         self.endpoint = endpoint
         self.baseurl = "https://jsonplaceholder.typicode.com/"
-    
+
     def get_resource(self, id):
         url = self.baseurl + self.endpoint + str(id)
         try:
-            resource = requests.get(url, verify=False, headers={"Content-Type": "application/json"})
+            resource = requests.get(url, verify=False,
+                                    headers={"Content-Type":
+                                             "application/json"})
             if resource:
                 return resource
             return None
         except requests.exceptions.RequestException:
             return 1
-        
-def input_validation(request, action = "add_post"):
+
+
+def input_validation(request, action="add_post"):
     try:
         if request.content_length > 700:
             return {'msg': 'Request too long.'}, 400
@@ -70,6 +76,7 @@ def input_validation(request, action = "add_post"):
         return {'msg': 'Wrong format of the request.'}, 400
     return None
 
+
 @app.get('/posts/<post_id>')
 def get_post(post_id):
     try:
@@ -89,8 +96,9 @@ def get_post(post_id):
             db.session.add(post)
             db.session.commit()
             return post.show(), 200
-        
+
         return {'msg': 'Post not found.'}, 404
+
 
 @app.get('/posts/from_user=<user_id>')
 def get_user_posts(user_id):
@@ -104,9 +112,9 @@ def get_user_posts(user_id):
         return {'msg': 'No posts from user {}'.format(user_id)}, 404
     return jsonify(posts)
 
+
 @app.post('/posts')
 def add_post():
-    
     check = input_validation(request)
     if check:
         return check
@@ -125,6 +133,7 @@ def add_post():
     db.session.commit()
     return post.show(), 201
 
+
 @app.put('/posts/<post_id>')
 def update_post(post_id):
     post = Post.query.get(post_id)
@@ -141,10 +150,11 @@ def update_post(post_id):
         value = request.json[field]
         update_action = post.update(field, value)
         result[field] = update_action
-        if update_action == 'Updated!':         
+        if update_action == 'Updated!':
             code = 200
-  
-    return {"update_status" : result, "post" : post.show()}, code
+
+    return {"update_status": result, "post": post.show()}, code
+
 
 @app.delete('/posts/<post_id>')
 def delete_post(post_id):
