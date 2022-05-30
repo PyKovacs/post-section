@@ -7,6 +7,7 @@
 notes/
 .venv/
 data/
+.vscode/
 
 # Build results
 [Dd]ebug/
