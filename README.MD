@@ -5,7 +5,10 @@ External API https://jsonplaceholder.typicode.com is used to validate the user w
 
 ## Installation
 
-Unpack post-section-package-0.1.tar.gz and install PIP dependecies listed in [PIP freeze](requirements.txt)
+Unpack post-section-package-0.1.tar.gz and install PIP dependecies listed in [PIP freeze](requirements.txt):
+```
+pip3 install -r requirements.txt 
+```
 
 ## First run
 
