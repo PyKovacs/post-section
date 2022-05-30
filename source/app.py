@@ -58,7 +58,7 @@ class ExAPI():
 def input_validation(request, action="add_post"):
     try:
         if not request.get_json(silent=True):
-            return {'msg': 'Request is not JSON format.'}, 422
+            return {'msg': 'Error when parsing JSON request.'}, 422
         if request.content_length > 700:
             return {'msg': 'Request too long.'}, 400
         # title
