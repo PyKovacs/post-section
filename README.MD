@@ -13,8 +13,10 @@ pip3 install -r requirements.txt
 ## First run
 
 Navigate to source/ folder and:
-1. Initiate the db:
+1. Initiate the db (don't mind the warning message):
 ```python3 db_init.py```
 
 2. Start flask:
 ```flask run```
+
+3. Bon APItite :)
