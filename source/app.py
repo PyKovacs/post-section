@@ -25,7 +25,7 @@ class Post(db.Model):
 
     def update(self, attr, value):
         if attr not in ["title", "body"]:
-            return ('Wrong attribute.'
+            return ('Wrong attribute. '
                     'Only title and/or body can be modified. Dropped.')
         if attr == "title":
             self.title = value
@@ -57,26 +57,33 @@ class ExAPI():
 
 def input_validation(request, action="add_post"):
     try:
-        if not request.get_json(silent=True):
-            return {'msg': 'Error when parsing JSON request.'}, 422
+        request_json = request.get_json(silent=True)
+        if not request_json:
+            return {'msg': 'Invalid JSON request.'}, 400
         if request.content_length > 700:
-            return {'msg': 'Request too long.'}, 400
+            return {'msg': 'Request too long.'}, 422
         # title
-        p_title = request.json['title']
+        p_title = request_json['title']
         if not p_title or len(str(p_title)) > 80:
-            return {'msg': 'Title is missing or too long (max 80 chars).'}, 400
+            return {'msg':
+                    'Title value is missing or too long (max 80 chars).'}, 422
         # body
-        p_body = request.json['body']
+        p_body = request_json['body']
         if not p_body or len(str(p_body)) > 500:
-            return {'msg': 'Body is missing or too long (max 500 chars).'}, 400
+            return {'msg':
+                    'Body value is missing or too long (max 500 chars).'}, 422
         # userId
         if action == "add_post":
-            p_userId = request.json['userId']
+            p_userId = request_json['userId']
             if not p_userId or not str(p_userId).isdecimal():
-                return {'msg': 'User ID is in wrong format or missing.'}, 400
+                return {'msg': 'User ID is in wrong format or missing.'}, 422
+    except KeyError as keymiss:
+        if action == "add_post":
+            return {'msg':
+                    'Key {} is missing from request.'.format(keymiss)}, 422
     except (ValueError, AttributeError, TypeError):
         return {'msg': 'Wrong format of the request.'}, 400
-    return None
+    return request_json, 0
 
 
 @app.get('/posts/<post_id>')
@@ -118,19 +125,20 @@ def get_user_posts(user_id):
 @app.post('/posts')
 def add_post():
     check = input_validation(request)
-    if check:
+    if check[1] != 0:
         return check
+    req = check[0]
 
     users_ext_api = ExAPI("users/")
-    user_check = users_ext_api.get_resource(request.json['userId'])
+    user_check = users_ext_api.get_resource(req['userId'])
     if not user_check:
         return {'msg': 'User not found.'}, 404
     if user_check == 1:
         return {'msg': 'Internal error.'}, 500
 
-    post = Post(userId=request.json['userId'],
-                title=request.json['title'],
-                body=request.json['body'])
+    post = Post(userId=req['userId'],
+                title=req['title'],
+                body=req['body'])
     db.session.add(post)
     db.session.commit()
     return post.show(), 201
@@ -142,14 +150,15 @@ def update_post(post_id):
     if post is None:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
-    check = input_validation(request)
-    if check:
+    check = input_validation(request, "update_post")
+    if check[1] != 0:
         return check
+    req = check[0]
 
     result = {}
     code = 422
-    for field in request.json.keys():
-        value = request.json[field]
+    for field in req.keys():
+        value = req[field]
         update_action = post.update(field, value)
         result[field] = update_action
         if update_action == 'Updated!':
