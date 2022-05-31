@@ -1,6 +1,6 @@
 # Post-Section
 
-Post section provides API interface to post, display, update and delete posts.
+Post section provides API interface to post, fetch, update and delete posts.
 External API https://jsonplaceholder.typicode.com is used to validate the user when posting, and to retrieve any posts not found in local db.
 
 ## Installation
