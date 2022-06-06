@@ -36,7 +36,7 @@ class Post(db.Model):
         return 'Updated!'
 
 
-class ExAPI():
+class ExAPI:
 
     def __init__(self, endpoint) -> None:
         self.endpoint = endpoint
