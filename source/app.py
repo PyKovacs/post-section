@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from utils import Post, ExAPI, app, db, input_validation
+from classes import Post, ExAPI, app, db
 
 
 @app.get('/posts/<post_id>')
@@ -40,7 +40,7 @@ def get_user_posts(user_id):
 
 @app.post('/posts')
 def add_post():
-    check = input_validation(request)
+    check = Post.input_validation(request)
     if check[1] != 0:
         return check
     req = check[0]
@@ -66,7 +66,7 @@ def update_post(post_id):
     if post is None:
         return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
-    check = input_validation(request, "update_post")
+    check = Post.input_validation(request, "update_post")
     if check[1] != 0:
         return check
     req = check[0]
