@@ -5,7 +5,7 @@ External API https://jsonplaceholder.typicode.com is used to validate the user w
 
 ## Installation
 
-1. Extrtact tarball package
+1. Extract tarball package:
 ```
 tar -xvzf post-section-package-0.1.tar.gz
 ```
@@ -16,7 +16,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Install PIP dependecies listed in [requirements.txt](requirements.txt):
+3. Install PIP dependencies listed in [requirements.txt](requirements.txt):
 ```
 pip3 install -r requirements.txt 
 ```

@@ -18,14 +18,14 @@ class Post(db.Model):
         return str(self.id)
 
     def show(self):
-        '''Returns human readable represantation.'''
+        '''Returns human readable representation.'''
         return {'id': self.id,
                 'userId': self.userId,
                 'title': self.title,
                 'body': self.body}
 
     def update(self, attr: str, value: str):
-        '''Checks the update request and updates the post, commiting to db.'''
+        '''Checks the update request and updates the post, commit to db.'''
         if attr not in ['title', 'body']:
             return ('Wrong attribute. Only title '
                     'and/or body can be modified. Dropped.')
