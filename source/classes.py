@@ -23,19 +23,19 @@ class Post(db.Model):
                 'body': self.body}
 
     def update(self, attr: str, value: str):
-        if attr not in ["title", "body"]:
-            return ('Wrong attribute. '
-                    'Only title and/or body can be modified. Dropped.')
-        if attr == "title":
+        if attr not in ['title', 'body']:
+            return ('Wrong attribute. Only title '
+                    'and/or body can be modified. Dropped.')
+        if attr == 'title':
             self.title = value
-        if attr == "body":
+        if attr == 'body':
             self.body = value
         db.session.add(self)
         db.session.commit()
         return 'Updated!'
 
     @staticmethod
-    def input_validation(request, action: str = "add_post"):
+    def input_validation(request, action: str = 'add_post'):
         try:
             request_json = request.get_json(silent=True)
             if not request_json:
@@ -47,20 +47,23 @@ class Post(db.Model):
             p_title = request_json['title']
             if not p_title or len(str(p_title)) > 80:
                 return {'msg':
-                        'Title value is missing or too long (max 80 chars).'}, 422
+                        'Title value is missing or '
+                        'too long (max 80 chars).'}, 422
             # body
             p_body = request_json['body']
             if not p_body or len(str(p_body)) > 500:
                 return {'msg':
-                        'Body value is missing or too long (max 500 chars).'}, 422
+                        'Body value is missing or '
+                        'too long (max 500 chars).'}, 422
             # userId
-            if action == "add_post":
+            if action == 'add_post':
                 p_userId = request_json['userId']
                 if not p_userId or not str(p_userId).isdecimal():
-                    return {'msg': 'User ID is in wrong format or missing.'}, 422
+                    return {'msg': 'User ID is in '
+                            'wrong format or missing.'}, 422
 
         except KeyError as keymiss:
-            if action == "add_post":
+            if action == 'add_post':
                 return {'msg':
                         'Key {} is missing from request.'.format(keymiss)}, 422
         except (ValueError, AttributeError, TypeError):
@@ -71,14 +74,14 @@ class Post(db.Model):
 class ExAPI:
     def __init__(self, endpoint: str) -> None:
         self.endpoint = endpoint
-        self.baseurl = "https://jsonplaceholder.typicode.com/"
+        self.baseurl = 'https://jsonplaceholder.typicode.com/'
 
     def get_resource(self, id: int):
         url = self.baseurl + self.endpoint + str(id)
         try:
             resource = requests.get(url, verify=False,
-                                    headers={"Content-Type":
-                                             "application/json"})
+                                    headers={'Content-Type':
+                                             'application/json'})
             if resource:
                 return resource
             return None
