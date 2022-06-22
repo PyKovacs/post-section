@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from classes import Post, ExAPI, app, db
+from source.classes import Post, ExAPI, app, db
 
 
 @app.get('/posts/<post_id>')
