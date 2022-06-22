@@ -14,15 +14,18 @@ class Post(db.Model):
     body = db.Column(db.String(500))
 
     def __repr__(self):
+        '''Returns only ID, for db operations.'''
         return str(self.id)
 
     def show(self):
+        '''Returns human readable represantation.'''
         return {'id': self.id,
                 'userId': self.userId,
                 'title': self.title,
                 'body': self.body}
 
     def update(self, attr: str, value: str):
+        '''Checks the update request and updates the post, commiting to db.'''
         if attr not in ['title', 'body']:
             return ('Wrong attribute. Only title '
                     'and/or body can be modified. Dropped.')
@@ -37,6 +40,7 @@ class Post(db.Model):
     @staticmethod
     def input_validation(request, action: str = 'add_post'):
         try:
+            # whole request body
             request_json = request.get_json(silent=True)
             if not request_json:
                 return {'msg': 'Invalid JSON request.'}, 400
