@@ -1,5 +1,5 @@
 from os import mkdir
-from app import db
+from classes import db
 
 mkdir("../data")
 db.create_all()
