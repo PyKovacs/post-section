@@ -1,4 +1,10 @@
-def input_validation(request, action: str = 'add_post'):
+from typing import Optional
+
+import requests
+
+EXTERNAL_API_URL = 'https://jsonplaceholder.typicode.com/'
+
+def validate_input(request, action: str = 'add_post'):
     try:
         # whole request body
         request_json = request.get_json(silent=True)
@@ -33,3 +39,17 @@ def input_validation(request, action: str = 'add_post'):
     except (ValueError, AttributeError, TypeError):
         return {'msg': 'Wrong format of the request.'}, 400
     return request_json, 0
+
+
+def call_external_api(endpoint: str, id: int) -> Optional[requests.Response]:
+    '''Call external API service to check for resource.'''
+    url: str = EXTERNAL_API_URL + endpoint + str(id)
+    try:
+        resource = requests.get(url, verify=False,
+                                headers={'Content-Type':
+                                            'application/json'})
+        if resource:
+            return resource
+        return None
+    except requests.exceptions.RequestException:
+        return None

@@ -1,31 +1,31 @@
-import requests
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
-from source.utils import input_validation
+from source.utils import call_external_api, validate_input
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.db'
 db = SQLAlchemy(app)
 
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.Integer)
-    title = db.Column(db.String(80), nullable=False)
-    body = db.Column(db.String(500))
 
-    def __repr__(self):
-        '''Returns only ID, for db operations.'''
+class Post(db.Model):
+    id: int = db.Column(db.Integer, primary_key=True)
+    userId: int = db.Column(db.Integer)
+    title: str = db.Column(db.String(80), nullable=False)
+    body: str = db.Column(db.String(500))
+
+    def __repr__(self) -> str:
+        '''Returns ID as string, for db operations.'''
         return str(self.id)
 
-    def show(self):
+    def show(self) -> dict[str, (int|str)] :
         '''Returns human readable representation.'''
         return {'id': self.id,
                 'userId': self.userId,
                 'title': self.title,
                 'body': self.body}
     
-    def update(self, attr: str, value: str):
+    def update(self, attr: str, value: str) -> str:
         '''Checks the update request and updates the post, commit to db.'''
         if attr not in ['title', 'body']:
             return ('Wrong attribute. Only title '
@@ -50,10 +50,7 @@ class Post(db.Model):
             post = cls.query.get(post_id)
             return post.show()
         except AttributeError:
-            posts_ext_api = ExAPI('posts/')
-            post_find = posts_ext_api.get_resource(post_id)
-            if post_find == 1:
-                return {'msg': 'Internal error.'}, 500
+            post_find = call_external_api('posts/', post_id)
             if post_find:
                 p = post_find.json()
                 post = cls(id=p['id'],
@@ -89,14 +86,13 @@ class Post(db.Model):
 
         User ID is validated against external API.
         '''
-        check = input_validation(request)
+        check = validate_input(request)
         if check[1] != 0:
             return check
         req = check[0]
 
         # user validation on external API
-        users_ext_api = ExAPI('users/')
-        user_check = users_ext_api.get_resource(req['userId'])
+        user_check = call_external_api('users/', req['userId'])
         if not user_check:
             return {'msg': 'User not found.'}, 404
         if user_check == 1:
@@ -123,7 +119,7 @@ class Post(db.Model):
             return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
         # data validation
-        check = input_validation(request, 'update_post')
+        check = validate_input(request, 'update_post')
         if check[1] != 0:
             return check
         req = check[0]
@@ -153,19 +149,5 @@ class Post(db.Model):
         return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
 
 
-class ExAPI:
-    def __init__(self, endpoint: str) -> None:
-        self.endpoint = endpoint
-        self.baseurl = 'https://jsonplaceholder.typicode.com/'
 
-    def get_resource(self, id: int):
-        url = self.baseurl + self.endpoint + str(id)
-        try:
-            resource = requests.get(url, verify=False,
-                                    headers={'Content-Type':
-                                             'application/json'})
-            if resource:
-                return resource
-            return None
-        except requests.exceptions.RequestException:
-            return 1
+
