@@ -1,8 +1,14 @@
-from source.classes import app
+from source.classes import app, db
 import source.actions
+import os
 
 
-def _main():
+def main():
+    #Initialize DB
+    if not os.path.exists('./data/data.db'):
+        os.mkdir("./data")
+        db.create_all()
+
     @app.get('/posts/<post_id>')
     def get_post(post_id):
         return source.actions.get_post(post_id)
@@ -25,4 +31,16 @@ def _main():
 
 
 if __name__ == 'post-section':
-    _main()
+    main()
+
+
+'''
+TO IMPROVE: 
+- DB INIT ON START
+- SWAGGER DOCU
+- CODE STRUCTURE REVIEW
+    - wrap app to class
+- FRONTEND HTML,CSS
+- PACKAGING
+- README
+'''
