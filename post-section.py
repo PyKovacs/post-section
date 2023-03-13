@@ -1,15 +1,16 @@
 import os
-from views import interface
+
 from source.model import app, db
+from views import interface
 
 
-def main():
-    app.register_blueprint(interface, url_prefix='/')
-
+def main() -> None:
     #Initialize DB
     if not os.path.exists('./data/data.db'):
         os.mkdir("./data")
         db.create_all()
+
+    app.register_blueprint(interface, url_prefix='/')
 
 if __name__ == 'post-section':
     main()
@@ -18,7 +19,7 @@ if __name__ == 'post-section':
 
 '''
 TO IMPROVE: 
-- DB INIT ON START
+DONE - DB INIT ON START
 - SWAGGER DOCU
 - CODE STRUCTURE REVIEW
     - wrap app to class
@@ -26,10 +27,4 @@ TO IMPROVE:
 - PACKAGING
 - README
 - REVIEW TYPING
-- MECHANISM FOR ID ASSIGN - assigning next, not first free
-'''
-
-'''
-TODO:
-- change show method in Post class to __str___
 '''
