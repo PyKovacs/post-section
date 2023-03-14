@@ -1,11 +1,7 @@
-from flask import Flask, jsonify, request, Response
-from flask_sqlalchemy import SQLAlchemy
+from flask import Response, jsonify, request
 
+from source import db
 from source.utils import call_external_api, validate_input
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.db'
-db = SQLAlchemy(app)
 
 
 class Post(db.Model):

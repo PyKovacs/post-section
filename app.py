@@ -1,7 +1,7 @@
 import os
 
-from source.model import app, db
 from api import api_interface
+from source import app, db
 
 
 def main() -> None:
@@ -12,7 +12,7 @@ def main() -> None:
 
     app.register_blueprint(api_interface, url_prefix='/api')
 
-if __name__ == 'post-section':
+if __name__ == 'app':
     main()
 
 
