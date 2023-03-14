@@ -1,7 +1,7 @@
 import os
 
 from source.model import app, db
-from views import interface
+from api import api_interface
 
 
 def main() -> None:
@@ -10,7 +10,7 @@ def main() -> None:
         os.mkdir("./data")
         db.create_all()
 
-    app.register_blueprint(interface, url_prefix='/')
+    app.register_blueprint(api_interface, url_prefix='/api')
 
 if __name__ == 'post-section':
     main()
