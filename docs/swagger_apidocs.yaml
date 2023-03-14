@@ -12,7 +12,7 @@ tags:
 schemes:
 - "http"
 paths:
-  /posts:
+  /api/posts:
     post:
       tags:
       - "posts"
@@ -24,8 +24,8 @@ paths:
       - "application/json"
       parameters:
       - in: "body"
-        name: "body"
-        description: "Post that needs to be addded"
+        name: "post_parameters"
+        description: "Key-value pairs to add"
         required: true
         schema:
           $ref: "#/definitions/postPosts"
@@ -48,7 +48,7 @@ paths:
             $ref: "#/definitions/titlelong"
         "500":
           description: "Internal error"
-  /posts/{post_id}:
+  /api/posts/{post_id}:
     put:
       tags:
       - "posts"
@@ -66,8 +66,8 @@ paths:
         type: "integer"
         format: "int64"
       - in: "body"
-        name: "body"
-        description: "Post values that needs to be updated"
+        name: "post_parameters"
+        description: "Post values to update"
         required: true
         schema:
           $ref: "#/definitions/updatePosts"
@@ -97,7 +97,7 @@ paths:
       parameters:
       - in: "path"
         name: "post_id"
-        description: "ID of post to return"
+        description: "ID of post to get"
         required: true
         type: "integer"
         format: "int64"
@@ -134,7 +134,7 @@ paths:
           description: "Post ID not found"
           schema:
             $ref: "#/definitions/postNA"
-  /posts/from_user={user_id}:
+  /api/posts/from_user={user_id}:
     get:
       tags:
       - "posts"
@@ -172,7 +172,7 @@ definitions:
       userId:
         type: "integer"
         format: "int64"
-        example: 66
+        example: 6
       id:
         type: "integer"
         format: "int64"
@@ -201,11 +201,11 @@ definitions:
           type: "string"
           example: "Per aspera ad astra."
     example:
-      - userID: 66
+      - userID: 6
         id: 5
         title: "Post title 1"
         body: "Per aspera ad astra."
-      - userID: 66
+      - userID: 6
         id: 24
         title: "Post title 2"
         body: "Cogito ergo sum."
@@ -219,7 +219,7 @@ definitions:
       userId:
         type: "integer"
         format: "int64"
-        example: 66
+        example: 6
       title:
         type: "string"
         example: "Post title"
@@ -247,7 +247,7 @@ definitions:
           userId:
             type: "integer"
             format: "int64"
-            example: 66
+            example: 6
           id:
             type: "integer"
             format: "int64"
