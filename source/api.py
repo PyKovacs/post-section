@@ -2,7 +2,7 @@ from flask import Blueprint, Response
 
 from source.model import Post
 
-api_interface = Blueprint(__name__, 'api_interface')
+api_interface = Blueprint('api_interface', __name__)
 post_model = Post()
 
 @api_interface.get('/posts/<post_id>')

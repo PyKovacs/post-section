@@ -1,7 +1,7 @@
 import os
 
-from api import api_interface
 from source import app, db
+from source.api import api_interface
 
 
 def main() -> None:
