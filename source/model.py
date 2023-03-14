@@ -19,14 +19,14 @@ class Post(db.Model):
         return str(self.id)
 
     def show(self) -> dict[str, (int|str)] :
-        '''Returns human readable representation.'''
+        '''Returns human readable representation as a dict.'''
         return {'id': self.id,
                 'userId': self.userId,
                 'title': self.title,
                 'body': self.body}
     
-    def update(self, attr: str, value: str) -> str:
-        '''Checks the update request and updates the post, commit to db.'''
+    def update_field(self, attr: str, value: str) -> str:
+        '''Updates specific post field.'''
         if attr not in ['title', 'body']:
             return ('Wrong attribute. Only title '
                     'and/or body can be modified. Dropped.')
@@ -34,8 +34,6 @@ class Post(db.Model):
             self.title = value
         if attr == 'body':
             self.body = value
-        db.session.add(self)
-        db.session.commit()
         return 'Updated!'
     
     @classmethod
@@ -106,7 +104,7 @@ class Post(db.Model):
         return post.show(), 201
 
     @classmethod
-    def update_post(cls, post_id):
+    def update(cls, post_id):
         '''
         Performs PUT request with post ID as parameter.
         Request must contain data.
@@ -114,7 +112,7 @@ class Post(db.Model):
         '''
 
         # find post
-        post = cls.query.get(post_id)
+        post: Post = cls.query.get(post_id)
         if post is None:
             return {'msg': 'Post ID {} not found.'.format(post_id)}, 404
 
@@ -128,11 +126,13 @@ class Post(db.Model):
         result = {}
         code = 422
         for field, value in req.items():
-            update_action = post.update(field, value)
+            update_action = post.update_field(field, value)
             result[field] = update_action
             if update_action == 'Updated!':
                 code = 200
 
+        db.session.add(post)
+        db.session.commit()
         return {'update_status': result, 'post': post.show()}, code
 
     @classmethod
