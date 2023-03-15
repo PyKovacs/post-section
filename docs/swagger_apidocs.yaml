@@ -12,7 +12,7 @@ tags:
 schemes:
 - "http"
 paths:
-  /api/posts:
+  /posts:
     post:
       tags:
       - "posts"
@@ -48,7 +48,7 @@ paths:
             $ref: "#/definitions/titlelong"
         "500":
           description: "Internal error"
-  /api/posts/{post_id}:
+  /posts/{post_id}:
     put:
       tags:
       - "posts"
@@ -134,7 +134,7 @@ paths:
           description: "Post ID not found"
           schema:
             $ref: "#/definitions/postNA"
-  /api/posts/from_user={user_id}:
+  /posts/from_user={user_id}:
     get:
       tags:
       - "posts"
