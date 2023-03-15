@@ -21,6 +21,8 @@ pip3 install dist/post_section-0.0.10-py3-none-any.whl
 ## First run
 
 1. Start flask with app parameter *post_section*:
-```flask --app post_section run```
+```
+flask --app post_section run
+```
 
 2. Bon APItite :)
