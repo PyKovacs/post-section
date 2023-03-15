@@ -1,4 +1,4 @@
-# Post-Section
+# Post_section
 
 Post section provides API interface to post, fetch, update and delete posts.
 External API https://jsonplaceholder.typicode.com is used to validate the user when posting, and to retrieve any posts not found in local db.
@@ -7,7 +7,7 @@ External API https://jsonplaceholder.typicode.com is used to validate the user w
 
 1. Extract tarball package:
 ```
-tar -xvzf post-section-package-0.1.tar.gz
+tar -xvzf post_section-package-0.1.tar.gz
 ```
 
 2. *(Optional)* Create and activate python virtual environment:

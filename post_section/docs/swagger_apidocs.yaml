@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: "API interface for post management."
   version: "0.0.1"
-  title: "Post-Section"
+  title: "Post_section"
   contact:
     email: "david.kovacs.1991@gmail.com"
 host: "127.0.0.1:5000"

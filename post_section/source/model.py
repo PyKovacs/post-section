@@ -1,7 +1,7 @@
 from flask import Response, jsonify, request
 
-from source import db
-from source.utils import call_external_api, validate_input
+from post_section import db
+from post_section.source.utils import call_external_api, validate_input
 
 
 class Post(db.Model):
