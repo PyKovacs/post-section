@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: "API interface for post management."
   version: "0.0.1"
-  title: "Post-Section"
+  title: "Post_section"
   contact:
     email: "david.kovacs.1991@gmail.com"
 host: "127.0.0.1:5000"
@@ -24,8 +24,8 @@ paths:
       - "application/json"
       parameters:
       - in: "body"
-        name: "body"
-        description: "Post that needs to be addded"
+        name: "post_parameters"
+        description: "Key-value pairs to add"
         required: true
         schema:
           $ref: "#/definitions/postPosts"
@@ -66,8 +66,8 @@ paths:
         type: "integer"
         format: "int64"
       - in: "body"
-        name: "body"
-        description: "Post values that needs to be updated"
+        name: "post_parameters"
+        description: "Post values to update"
         required: true
         schema:
           $ref: "#/definitions/updatePosts"
@@ -97,7 +97,7 @@ paths:
       parameters:
       - in: "path"
         name: "post_id"
-        description: "ID of post to return"
+        description: "ID of post to get"
         required: true
         type: "integer"
         format: "int64"
@@ -172,7 +172,7 @@ definitions:
       userId:
         type: "integer"
         format: "int64"
-        example: 66
+        example: 6
       id:
         type: "integer"
         format: "int64"
@@ -201,11 +201,11 @@ definitions:
           type: "string"
           example: "Per aspera ad astra."
     example:
-      - userID: 66
+      - userID: 6
         id: 5
         title: "Post title 1"
         body: "Per aspera ad astra."
-      - userID: 66
+      - userID: 6
         id: 24
         title: "Post title 2"
         body: "Cogito ergo sum."
@@ -219,7 +219,7 @@ definitions:
       userId:
         type: "integer"
         format: "int64"
-        example: 66
+        example: 6
       title:
         type: "string"
         example: "Post title"
@@ -247,7 +247,7 @@ definitions:
           userId:
             type: "integer"
             format: "int64"
-            example: 66
+            example: 6
           id:
             type: "integer"
             format: "int64"

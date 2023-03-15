@@ -1,32 +1,26 @@
-# Post-Section
+# Post_section
 
 Post section provides API interface to post, fetch, update and delete posts.
 External API https://jsonplaceholder.typicode.com is used to validate the user when posting, and to retrieve any posts not found in local db.
 
+*NOTE: As this code is not considered for production environment, flask is only running dev server on local host, **therefore it is not accessible from outside.***
+
 ## Installation
 
-1. Extract tarball package:
-```
-tar -xvzf post-section-package-0.1.tar.gz
-```
-
-2. *(Optional)* Create and activate python virtual environment:
+1. Create and activate python virtual environment:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Install PIP dependencies listed in [requirements.txt](requirements.txt):
+2. Install post-section wheel package located in *dist* folder:
 ```
-pip3 install -r requirements.txt 
+pip3 install dist/post_section-0.0.10-py3-none-any.whl
 ```
 
 ## First run
 
-1. Initiate the db (don't mind the warning message):
-```python3 source/db_init.py```
+1. Start flask with app parameter *post_section*:
+```flask --app post_section run```
 
-2. Start flask:
-```flask run```
-
-3. Bon APItite :)
+2. Bon APItite :)
