@@ -4,7 +4,7 @@ with open("README.MD", "r") as f:
     long_description = f.read()
 
 setup(
-    name="post_section",
+    name="post-section",
     version="0.0.10",
     description="Post section provides API interface to post, fetch, update and delete posts.",
     packages=['post_section', 'post_section.source'],
