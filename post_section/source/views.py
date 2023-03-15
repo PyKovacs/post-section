@@ -1,6 +1,6 @@
 from flask import Response
-from post_section import app
 
+from post_section import app
 from post_section.source.model import Post
 
 post_model = Post()

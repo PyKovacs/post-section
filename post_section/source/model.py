@@ -144,7 +144,3 @@ class Post(db.Model):
         db.session.delete(post)
         db.session.commit()
         return {'msg': 'Post with ID {} deleted.'.format(post_id)}, 200
-
-
-
-
